@@ -2,5 +2,26 @@
   "dependencies": {
     "mysql": "^2.18.1",
     "uuid": "^9.0.1"
-  }
+  },
+  "name": "everydayonehmanga",
+  "description": "每天都看一本本子吧！每天都有一本所有人一起看的本子！每天也有一本自己私有的本子！",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CHonesetDoPa/EveryDayOneHManga.git"
+  },
+  "keywords": [
+    "manga"
+  ],
+  "author": "CH",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/CHonesetDoPa/EveryDayOneHManga/issues"
+  },
+  "homepage": "https://github.com/CHonesetDoPa/EveryDayOneHManga#readme"
 }
