@@ -129,5 +129,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# file list
+# Settings & File List
+config.js
 list.json
