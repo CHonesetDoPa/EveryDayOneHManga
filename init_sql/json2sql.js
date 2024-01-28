@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid'); 
 
-const jsonData = require('./list.json'); 
+const jsonData = require('../list.json'); 
 
 if (!Array.isArray(jsonData)) {
   console.error('JSON数据不是一个数组');
