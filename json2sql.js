@@ -1,21 +1,20 @@
 const fs = require('fs');
-const mysql = require('mysql');
-const config = require('./config'); 
+const path = require('path');
+const { v4: uuidv4 } = require('uuid'); 
 
-const jsonData = fs.readFileSync('list.json', 'utf8');
-const data = JSON.parse(jsonData);
+const jsonData = require('./list.json'); 
 
-const connection = mysql.createConnection(config); 
+if (!Array.isArray(jsonData)) {
+  console.error('JSON数据不是一个数组');
+  process.exit(1); 
+}
 
-connection.connect();
+const sqlStatements = jsonData.map(item => {
+  const uuid = uuidv4(); 
+  return `INSERT INTO edohm (id, uuid, filename, path, size) VALUES (${item.id}, '${uuid}', '${item.filename.replace(/'/g, "''")}', '${item.path.replace(/'/g, "''")}', ${item.size}) ON DUPLICATE KEY UPDATE uuid='${uuid}', filename='${item.filename.replace(/'/g, "''")}', path='${item.path.replace(/'/g, "''")}', size=${item.size};`;
+}).join('\n');
 
-data.forEach(item => {
-  const { id, filename, path, size } = item;
-  const insertQuery = `INSERT INTO your_table_name (id, filename, path, size) VALUES (?, ?, ?, ?)`;
-  connection.query(insertQuery, [id, filename, path, size], (error, results, fields) => {
-    if (error) throw error;
-    console.log('Inserted a row into MySQL with id: ', results.insertId);
-  });
-});
+const sqlFilePath = path.join(__dirname, 'list.sql');
+fs.writeFileSync(sqlFilePath, sqlStatements);
 
-connection.end();
+console.log('SQL语句已写入到list.sql文件中');

@@ -132,3 +132,4 @@ dist
 # Settings & File List
 config.js
 list.json
+list.sql
