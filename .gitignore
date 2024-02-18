@@ -131,8 +131,8 @@ dist
 
 # Settings & File List & tmp
 config.js
+PublicId.txt
 config_dev.js
 ./list.json
 ./list.sql
 /tmp/*
-PublicId.txt
