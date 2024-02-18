@@ -1,55 +1,44 @@
 function fetchData() {
-    fetch('/api/getPublicId')
-        .then(response => response.text())
-        .then(id => {
-            return fetch(`/api/${id}`);
-        })
-        .then(response => response.json())
-        .then(data => {
-            const apiResponseDiv = document.getElementById('randomBookPublicInfo');
-            apiResponseDiv.innerHTML = `
-                id: ${data.id}<br>
-                uuid: ${data.uuid}<br>
-                filename: ${data.filename}<br>
-                path: ${data.path}<br>
-                size: ${data.size}<br>
-            `;
-        })
-        .catch(error => {
-            console.error('Error fetching API data:', error);
-        });
+  fetch('/api/getPublicId')
+      .then(response => response.text())
+      .then(id => {
+          return fetch(`/api/${id}`);
+      })
+      .then(response => response.json())
+      .then(data => {
+          const apiResponseDiv = document.getElementById('randomBookPublicInfo');
+          const sizeInMegabytes = (data.size / (1024 * 1024)).toFixed(2);
+          apiResponseDiv.innerHTML = `
+              id: ${data.id}<br>
+              uuid: ${data.uuid}<br>
+              filename: ${data.filename}<br>
+              size: ${sizeInMegabytes} MB<br>
+          `;
+      })
+      .catch(error => {
+          console.error('Error fetching API data:', error);
+      });
 }
 
+
 function fetchPersonalData() {
-    fetch('/api/getPresonalId')
-      .then(response => response.json())
-      .then(data => {
-        const id = data.uniqueId;
-  
-        // 使用uniqueId访问/api/id
-        return fetch(`/api/${id}`);
-      })
-      .then(response => response.json())
-      .then(data => {
-        const apiResponseDiv = document.getElementById('randomBookPersonalInfo');
-            apiResponseDiv.innerHTML = `
-                id: ${data.id}<br>
-                uuid: ${data.uuid}<br>
-                filename: ${data.filename}<br>
-                path: ${data.path}<br>
-                size: ${data.size}<br>
-            `;
-        })
-      .catch(error => {
-        console.error('Error:', error);
-      });
+  fetch('/api/getPersonalId')
+  .then(response => response.text())
+  .then(id => {
+      return fetch(`/api/${id}`);
+  })
+  .then(response => response.json())
+  .then(data => {
+      const apiResponseDiv = document.getElementById('randomBookPersonalInfo');
+      const sizeInMegabytes = (data.size / (1024 * 1024)).toFixed(2);
+      apiResponseDiv.innerHTML = `
+          id: ${data.id}<br>
+          uuid: ${data.uuid}<br>
+          filename: ${data.filename}<br>
+          size: ${sizeInMegabytes} MB<br>
+      `;
+  })
+  .catch(error => {
+      console.error('Error fetching API data:', error);
+  });
   }
-  
-function testFetchPersonalId(){
-    fetch('/api/getPresonalId')
-      .then(response => response.json())
-      .then(data => {
-        const id = data.uniqueId;
-        console.log(id);
-      })
-}

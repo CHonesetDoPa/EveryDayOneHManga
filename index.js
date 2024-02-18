@@ -6,6 +6,7 @@ const config = require('./config');
 const axios = require('axios');
 const path = require('path');
 const crypto = require('crypto');
+const fingerprint = require('express-fingerprint');
 // 导入 child_process 模块，用于执行外部命令
 const { exec } = require('child_process');
 
@@ -34,8 +35,7 @@ const app = express();
 
 // 静态资源文件目录
 app.use(express.static(path.join(__dirname, 'webui')));
-
-
+app.use(fingerprint());
 // 创建数据库连接
 const connection = mysql.createConnection({
     host: config.host,
@@ -73,12 +73,26 @@ app.get('/api/getPublicId', (req, res) => {
   });
 });
 
+app.get('/api/getPersonalIdPre', (req, res) => {
+  // 读取PersonalId.txt文件
+  fs.readFile('PersonalId.txt', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    // 将读取的数据作为纯文本发送回客户端
+    res.send(data);
+  });
+});
+
 app.get('/api/getPersonalId', (req, res) => {
-  const ip = req.ip; // 获取访问 API 的 IP
-  const currentDate = new Date().toISOString().slice(0, 10); // 获取当前日期
-  const seed = ip + currentDate; // 以 IP 和日期作为种子
-  const uniqueId = generateUniqueId(seed); // 生成唯一 ID
-  res.json({ ip, currentDate, uniqueId });
+  const clientFingerprint = req.fingerprint.hash;
+  const currentDate = new Date().toISOString().slice(0, 10);
+  const seed = clientFingerprint + currentDate; 
+  const uniqueId = generateUniqueId(seed); 
+  res.send(uniqueId.toString()); 
 });
 
 // 生成唯一 ID 的函数
@@ -135,22 +149,28 @@ app.get('/api/:id', async (req, res) => {
           // 延迟下载文件
           setTimeout(async () => {
             try {
-              // 下载文件
+              // 检查文件是否存在
               const fileExtension = path.extname(record.filename);
               const fileDownloadPath = `tmp/${record.uuid}${fileExtension}`;
-  
+          
+              if (fs.existsSync(fileDownloadPath)) {
+                console.log('File already exists. Skipping download.');
+                return; // 如果文件已经存在，跳过下载
+              }
+          
+              // 如果文件不存在，则进行下载
               const response = await axios.get(fileLink, {
                 responseType: 'stream',
                 timeout: 30000 // 设置超时时间
               });
-  
+          
               const writer = fs.createWriteStream(fileDownloadPath);
               response.data.pipe(writer);
-  
+          
               writer.on('finish', () => {
                 console.log('File downloaded successfully');
               });
-  
+          
               writer.on('error', (err) => {
                 console.error('Error writing file: ' + err);
               });
