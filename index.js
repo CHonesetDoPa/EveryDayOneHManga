@@ -5,9 +5,36 @@ const fs = require('fs');
 const config = require('./config');
 const axios = require('axios');
 const path = require('path');
+const crypto = require('crypto');
+// 导入 child_process 模块，用于执行外部命令
+const { exec } = require('child_process');
+
+// 定义要执行的脚本文件
+const refreshscriptPath = 'refreshId.js';
+
+// 定义每天的毫秒数
+const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+
+function executerefresh() {
+  exec(`node ${refreshscriptPath}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`执行脚本时出错: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`脚本输出错误: ${stderr}`);
+      return;
+    }
+    console.log(`refreshId.js: ${stdout}`);
+  });
+}
 
 // 创建Express应用
 const app = express();
+
+// 静态资源文件目录
+app.use(express.static(path.join(__dirname, 'webui')));
+
 
 // 创建数据库连接
 const connection = mysql.createConnection({
@@ -26,6 +53,42 @@ connection.connect((err) => {
     }
     console.log('Connected to database as ID ' + connection.threadId);
 });
+
+// 路由
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'webui', 'index.html'));
+});
+
+app.get('/api/getPublicId', (req, res) => {
+  // 读取PublicId.txt文件
+  fs.readFile('PublicId.txt', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+
+    // 将读取的数据作为纯文本发送回客户端
+    res.send(data);
+  });
+});
+
+app.get('/api/getPersonalId', (req, res) => {
+  const ip = req.ip; // 获取访问 API 的 IP
+  const currentDate = new Date().toISOString().slice(0, 10); // 获取当前日期
+  const seed = ip + currentDate; // 以 IP 和日期作为种子
+  const uniqueId = generateUniqueId(seed); // 生成唯一 ID
+  res.json({ ip, currentDate, uniqueId });
+});
+
+// 生成唯一 ID 的函数
+function generateUniqueId(seed) {
+  const hash = crypto.createHash('sha256'); // 使用 SHA-256 哈希函数
+  hash.update(seed);
+  const hashedSeed = hash.digest('hex');
+  const id = parseInt(hashedSeed.substring(0, 8), 16) % 70001; // 将哈希值转换为 0 到 70000 之间的数字
+  return id;
+}
 
 // 创建API端点
 app.get('/api/:id', async (req, res) => {
@@ -107,3 +170,14 @@ const port = 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+// 定义一个函数用于定时刷新
+function scheduleScriptExecution() {
+  // 执行脚本
+  executerefresh();
+  // 设置定时器，在指定时间后再次执行脚本
+  setTimeout(scheduleScriptExecution, oneDayInMilliseconds);
+}
+
+// 启动定时执行
+scheduleScriptExecution();
