@@ -37,13 +37,16 @@
                                 <span>Info</span>
                             </div>
                             <div id="">
-                                <p>欢迎使用EveryDayOneHManga Webui!</p>
-                                <p>每天都有一本公共随机本子，面向全部人开放</p>
-                                <p>同时每天您可以随机一本本子，仅供自己观赏</p>
+                                <p id="time"></p><br>
+                                <p>欢迎使用EveryDayOneHManga Webui!</p><br>
+                                <p>每天都有一本公共随机本子，面向全部人开放</p><br>
+                                <p>同时每天您可以随机一本本子，仅供自己观赏</p><br>
                                 <hr>
-                                <p>本项目使用浏览器指纹确定您的唯一性</p>
-                                <p>使用本项目代表您同意我们使用您的浏览器指纹来进行唯一性校验</p>
-                                <p><br><br><br><br><br><br><br></p>
+                                <p>本项目使用浏览器指纹确定您的唯一性</p><br>
+                                <p>使用本项目代表您同意我们使用您的浏览器指纹来进行唯一性校验</p><br>
+                                <p>本项目所引导下载的文件版权归属于对应作者</p><br>
+                                <p>项目适用于许可证“永远可爱许可证 v1”</p><br>
+                                <p><br><br></p>
                             </div>
                         </div>
                     </div>
@@ -55,28 +58,11 @@
                                 <span>Other</span>
                             </div>
                             <div id="">
-                                <li><a href="https://twitter.com/CH6306"
-                                        style="color: orange; text-decoration:none;">Twitter
+                                <li><a href="https://github.com/CHonesetDoPa/EveryDayOneHManga/blob/main/README.md"
+                                        style="color: orange; text-decoration:none;">ReadMe 
                                     </a></li>
-                                <li><a href="https://www.youtube.com/channel/UCu_wgqS21zUI8JSA1pBuQDQ"
-                                        style="color: orange; text-decoration:none;">Youtube Channel
-                                    </a></li>
-                                <li><a href="https://t.me/CH6306" style="color: orange; text-decoration:none;">Telegram
-                                    </a></li>
-                                <li><a href="https://steamcommunity.com/id/SakuraCH/"
-                                        style="color: orange; text-decoration:none;">Steam
-                                    </a></li>
-                                <li><a href="https://discord.gg/x4kV2tmjNF"
-                                        style="color: orange; text-decoration:none;">Discord Channel
-                                    </a></li>
-                                <li><a href="https://www.twitch.tv/ch6306"
-                                        style="color: orange; text-decoration:none;">Twitch
-                                    </a></li>
-                                <li><a href="https://osu.ppy.sh/users/16438125"
-                                        style="color: orange; text-decoration:none;">OSU!
-                                    </a></li>
-                                <li><a href="javascript:void(0);" onclick="session_id()"
-                                        style="color: orange; text-decoration:none;">Session
+                                <li><a href="https://github.com/CHonesetDoPa/EveryDayOneHManga"
+                                        style="color: orange; text-decoration:none;">Repo Link
                                     </a></li>
                             </div>
                         </div>
@@ -99,11 +85,6 @@
                             <p id="randomBookPersonal">
                             </p>
                         </div>
-                        <hr>
-                        <h2>相关网站</h2>
-                        <div class="tool">
-                            <li></li>
-                            <li></li>
                         </div>
                     </div>
                 </article>
@@ -111,7 +92,7 @@
         </main>
         <footer id="footer">
             <div id="footer-wrap">
-                Copyright 2024 CH 每一天都是新的一天
+                Repo Use Forever Lovely License v1 as License. Resource has its own License.
             </div>
         </footer>
     </div>
@@ -122,6 +103,7 @@
 <script src="assets/js/lazysizes.min.js" async></script>
 <script src="assets/js/sweetalert.min.js"></script>
 <script src="assets/js/getApi.js"></script>
+<script src="assets/js/fingerprint2.min.js"></script>
 <script type="text/javascript">
     //访问API
     fetchData();
@@ -130,6 +112,23 @@
     console.clear();
     console.log('每天都是新的一天');
     console.log("");
+    window.onload = function() {
+      // 显示当前时间
+      var displayTime = function() {
+        var currentTime = new Date();
+        var hours = currentTime.getHours();
+        var minutes = currentTime.getMinutes();
+        var seconds = currentTime.getSeconds();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 将 0 设为 12
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        var timeString = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+        document.getElementById('time').innerHTML = timeString;
+      };
+      displayTime();
+      setInterval(displayTime, 1000) // 每秒更新一次
+    }
 </script>
-
 </html>
